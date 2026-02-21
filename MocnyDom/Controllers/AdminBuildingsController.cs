@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MocnyDom.Application.DTOs;
-using MocnyDom.Application.Services.Buildings;
+using MocnyDom.Application.Services;
 
-namespace MocnyDom.API.Controllers.Admin
+namespace MocnyDom.Controllers
 {
     [ApiController]
     [Route("api/admin/buildings")]

@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MocnyDom.Application.DTOs;
-using MocnyDom.Application.Services.Sensors;
+using MocnyDom.Application.Services;
 using System.Security.Claims;
 
-namespace MocnyDom.Web.Controllers.Manager
+namespace MocnyDom.Controllers
 {
     [ApiController]
     [Route("api/manager/sensors")]

@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MocnyDom.Application.DTOs;
-using MocnyDom.Application.Services.Events;
+using MocnyDom.Application.Services;
 
-namespace MocnyDom.Web.Controllers.Events
+namespace MocnyDom.Controllers
 {
     [ApiController]
     [Route("api/events")]

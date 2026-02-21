@@ -4,6 +4,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using MocnyDom.Application.DTOs;
+using MocnyDom.Application.Services;
 
 namespace MocnyDom.Controllers
 {
@@ -12,17 +14,18 @@ namespace MocnyDom.Controllers
     public class AuthController : ControllerBase
     {
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly IConfiguration _config;
+        private readonly IJwtService _jwtService;
 
-        public AuthController(UserManager<IdentityUser> userManager, IConfiguration config)
+        public AuthController(UserManager<IdentityUser> userManager, IJwtService jwtService)
         {
             _userManager = userManager;
-            _config = config;
+            _jwtService = jwtService;
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest request)
+        public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
         {
+            ArgumentNullException.ThrowIfNull(request);
             var user = await _userManager.FindByNameAsync(request.Username);
             if (user == null)
                 return Unauthorized("Invalid username or password");
@@ -40,19 +43,19 @@ namespace MocnyDom.Controllers
             foreach (var role in roles)
                 claims.Add(new Claim(ClaimTypes.Role, role));
 
-            var token = GenerateJwt(claims, out var expires);
+            Tuple<string, DateTime> jwtResult = await _jwtService.GenerateJwt(claims);
 
             return Ok(new
             {
                 username = user.UserName,
                 roles = roles,
-                token = token,
-                expires = expires
+                token = jwtResult.Item1,
+                expires = jwtResult.Item2
             });
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+        public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
         {
             var user = new IdentityUser
             {
@@ -69,37 +72,5 @@ namespace MocnyDom.Controllers
 
             return Ok("User created");
         }
-
-        private string GenerateJwt(IEnumerable<Claim> claims, out DateTime expires)
-        {
-            var jwtSettings = _config.GetSection("Jwt");
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]!));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            expires = DateTime.UtcNow.AddHours(Convert.ToDouble(jwtSettings["ExpiresHours"]));
-
-            var token = new JwtSecurityToken(
-                issuer: jwtSettings["Issuer"],
-                audience: jwtSettings["Audience"],
-                claims: claims,
-                expires: expires,
-                signingCredentials: creds);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-    }
-
-    public class LoginRequest
-    {
-        public string Username { get; set; } = default!;
-        public string Password { get; set; } = default!;
-    }
-
-    public class RegisterRequest
-    {
-        public string Username { get; set; } = default!;
-        public string Email { get; set; } = default!;
-        public string Password { get; set; } = default!;
     }
 }

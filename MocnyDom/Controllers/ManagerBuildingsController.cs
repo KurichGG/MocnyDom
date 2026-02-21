@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using MocnyDom.Application.Services.Buildings;
+using MocnyDom.Application.Services;
 
-namespace MocnyDom.Controllers.Manager
+namespace MocnyDom.Controllers
 {
     [ApiController]
     [Route("api/manager/buildings")]
-    [Authorize(Roles = "Manager")]
+    [Authorize(Roles = "Manager,Admin")]
     public class ManagerBuildingsController : ControllerBase
     {
         private readonly IBuildingService _service;

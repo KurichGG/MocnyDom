@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MocnyDom.Application.Services.Events;
+using MocnyDom.Application.Services;
 using System.Security.Claims;
 
-namespace MocnyDom.Web.Controllers.Manager
+namespace MocnyDom.Controllers
 {
     [ApiController]
     [Route("api/manager/events")]
